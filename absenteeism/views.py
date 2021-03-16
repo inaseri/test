@@ -351,8 +351,11 @@ def export_users_xls(request,year,month):
     yearNumber = int(year)
 
     # this two lines calculate start and end of month
-    firstDayThisMonth = jdatetime.datetime(yearNumber,monthNumber,1,00,00,00)
-    firstDayNextMonth = jdatetime.datetime(yearNumber,monthNumber + 1,1,00,00,00)
+    firstDayThisMonth = jdatetime.datetime(yearNumber, monthNumber, 1,00,00,00)
+    if monthNumber == 12:
+        firstDayNextMonth = jdatetime.datetime(yearNumber + 1, 1, 1,00,00,00)
+    else:
+        firstDayNextMonth = jdatetime.datetime(yearNumber,monthNumber + 1,1,00,00,00)
 
     # this two lines convert persian date to gregorian date and time
     firstDayThisMonth = firstDayThisMonth.togregorian()
