@@ -1,0 +1,54 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+{% block title %}ورود{% endblock %}
+{% block js %}
+    <script src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script src="{% static 'theme1/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'theme1/js/scripts.js' %}"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/theme1/images/my-app-icone.jpeg">
+{% endblock %}
+{% block body %}
+    <div class="container">
+	<div class="row">
+		<div class="col-md-12">
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-4">
+				</div>
+				<div class="col-md-4">
+					<div class="row">
+						<div class="col-md-3"></div>
+						<div class="col-md-6 logo">
+							<!--<img src="{% static 'theme1/images/back2.png'%}"/>-->
+						</div>
+						<div class="col-md-3"></div>
+					</div>
+					<div class="row">
+						<div class="col-md-12 login">
+							<form method="post">{% csrf_token %}
+								  <p>
+									  <input type = "text" class="btn-baron" name="username" placeholder = "نام کاربری"
+									  />
+								  </p>
+								<p>
+									  <input type = "password" name="password" class="btn-baron" placeholder = "رمز ورود"/>
+								</p>
+								<button class="btn-baron" type="submit" style="width: 100%">ورود</button>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		</div>
+	</div>
+</div>
+{% endblock %}

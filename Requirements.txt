@@ -1,0 +1,9 @@
+django
+pillow
+jdatetime
+python-dateutil
+django-pwa
+openpyxl
+numpy
+django-cors-headers
+django-tastypie

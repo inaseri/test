@@ -1,0 +1,31 @@
+<html>
+{% load pwa %}
+	<head>
+        {% progressive_web_app_meta %}
+		<meta charset="utf-8">
+		<script type="text/javascript" src="../../Iman/static/Barab%20Complex/jquery.min.js"></script>
+		<script type="text/javascript" src="../../Iman/static/theme1/js/moment.min.js"></script>
+		<script type="text/javascript" src="../../Iman/static/theme1/js/daterangepicker.js"></script>
+		<script type="text/javascript" src="../../Iman/static/theme1/js/moment-jalaali.js"></script>
+		<script type="text/javascript" src="../../Iman/static/theme1/js/daterangepicker-fa.js"></script>
+		<link href="../../Iman/static/theme1/css/daterangepicker.css" rel="stylesheet"/>
+	</head>
+	<body>
+	<input class="form-control jalali-datepicker" type="text" name="datepicker">
+	<script>
+		$('.jalali-datepicker').daterangepicker({
+			clearLabel: 'Clear',
+			autoApply: true,
+			opens: 'left',
+			singleDatePicker: true,
+			showDropdowns: true,
+			jalaali: true,
+			language: 'fa'
+		}).on('apply.daterangepicker', function () {
+			$('.tooltip').hide();
+			$('.date-select').text($(this).val());
+		});
+	</script>
+	<script type="text/javascript" href="custom.min.js"></script>
+	</body>
+</html>

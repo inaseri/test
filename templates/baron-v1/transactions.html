@@ -1,0 +1,168 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+{% block title %}مبادلات{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+<script>
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+</script>
+<script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+{% endblock %}
+{% block css %}
+<link href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+{% endblock %}
+{% block body %}
+    <div class="container">
+		<div class="row">
+			<div class="col-md-12">
+			</div>
+		</div>
+		<div class="row" style="margin-top:50px;">
+			<div class="col-md-12">
+				<form method="post" id="datefilter">
+					{% csrf_token %}
+					<div class="row">
+						<div class="col-md-2" style="margin-top: 10px">
+							<select name="company" class="btn-baron">
+								<option value="0">همه</option>
+								{% if parent %}
+								{% if parent.parent %}
+								<option value="{{parent.parent.id}}">{{parent.parent}}</option>
+								{% endif %}
+								<option value="{{parent.id}}" selected>{{parent}}</option>
+								{% endif %}
+								{% for company in comany_name %}
+								<option value="{{ company.id }}">{{ company.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-md-1" style="margin-top: 10px">
+							<select name="bank" class="btn-baron">
+								<option value="0">همه</option>
+								{% for bank in banks %}
+								<option value="{{ bank.id }}"{% if bank_selected == bank %} selected{% endif %}>{{ bank }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-md-1" style="margin-top: 10px">
+							<p class="btn-baron">از تاریخ</p>
+						</div>
+						<div class="col-md-2" style="margin-top: 10px">
+							<input name="start_date" class="btn-baron jalali-datepicker" type="text" name="datepicker" {% if start_date %} value="{{start_date}}"{%endif %}>
+						</div>
+						<div class="col-md-2" style="margin-top: 10px">
+							<p class="btn-baron">تا تاریخ</p>
+						</div>
+						<div class="col-md-2" style="margin-top: 10px">
+							<input name="end_date" class="btn-baron jalali-datepicker" type="text" name="datepicker" {%if end_date %} value="{{end_date}}"{%endif%}>
+						</div>
+						<div class="col-md-2" style="margin-top: 10px">
+							<button type="submit" class="btn-baron" form="datefilter">فیلتر کردن</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-2" style="margin-top: 10px">
+							<p class="btn-baron">جستجو</p>
+						</div>
+						<div class="col-md-8" style="margin-top: 10px">
+							<input class="btn-baron" placeholder="جستجو در عنوان ها و توضیحات" name="titleforsearch">
+						</div>
+						<div class="col-md-2" style="margin-top: 10px">
+							<button class="btn-baron">جستجو کردن</button>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-3" style="margin-top: 10px"></div>
+						<div class="col-md-6" style="margin-top: 10px">
+							{% load humanize %}{% load Iman %}
+							<p class="btn-baron"> مجموع: {{ sum|intcomma }} </p>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table" dir="ltr" border=".5" width="100%"   cellpadding="4" cellspacing="3" align="center" style="color: green" >
+					<thead>
+						<tr>
+							<th scope="col" style="text-align: center">تصویر</th>
+							<th scope="col" style="text-align: center">عنوان</th>
+							<th scope="col" style="text-align: center">رقم</th>
+							<th scope="col" style="text-align: center">تاریخ</th>
+							<th scope="col" style="text-align: center">نام شرکت</th>
+							<th scope="col" style="text-align: center">نام بانک</th>
+							<th scope="col" style="text-align: center">تضویحات</th>
+							<th scope="col" style="text-align: center">ردیف</th>
+						</tr>
+                        {% for transaction in transactions %}
+                            <tr>
+                                <td>
+                                    {% if transaction.image %}
+                                    <a href="{{transaction.image.url}}" class="btn-baron" target="_blank">مشاهده ی تصویر</a>
+                                    {%endif %}
+                                </td>
+                                <td>{{ transaction.title }}</td>
+                                <td>{{ transaction.cash|intcomma }}</td>
+                                <td>{{ transaction.date_time|jdate:'%y/%m/%d' }}</td>
+                                <td>{{ transaction.company }}</td>
+                                <td>{{ transaction.bank}}</td>
+                                <td>{{ transaction.content }}</td>
+                                <td>#{{ transaction.id }}</td>
+                            </tr>
+                        {% endfor %}
+					</thead>
+				</table>
+			</div>
+		</div>
+		<!--<div class="row">-->
+			<!--<div class="col-md-4"></div>-->
+			<!--<div class="col-md-4">-->
+				<!--{% if Packlist.has_other_pages %}-->
+					  <!--<div class="dataTables_paginate paging_bootstrap col-sx-4 pull-right">-->
+						  <!--<ul class="pagination">-->
+							  <!--<li><a {% if Packlist.has_previous %}href="?page={{ Packlist.previous_page_number }}&service_name={{ service_name }}&eval_start_date={{eval_start_date}}&cp_companies={{ cp_id }}{% if user_name_id %}&user_name={{user_name_id}}{%endif%}" class="btn-baron" {% else %} class="muted btn-baron" {% endif %}>قبل</a></li>-->
+							   <!--{% if group == "Content provider"  %}-->
+								  <!--{% for p in pages %}-->
+								  <!--{% if p == page %}<li class="active"><a href="#" class="btn-baron">{{ p }} </a> {% else %}<li><a href="?&page={{ p }}&cp_companies={{ cp_id }}&service_name={{ service_name }}&eval_start_date={{eval_start_date}}{% if user_name_id %}&user_name={{user_name_id}}{%endif%}" class="btn-baron">{{ p }} </a>{% endif %}</li>-->
+								<!--{% endfor %}-->
+							   <!--{% else %}-->
+								<!--{% for p in pages %}-->
+								  <!--{% if p == page %}<li class="active"><a href="#" class="btn-baron">{{ p }} </a> {% else %}<li><a href="?&page={{ p }}&service_name={{ service_name }}&eval_start_date={{ eval_start_date }}&cp_companies={{ cp_id }}{% if user_name_id %}&user_name={{user_name_id}}{%endif%}" class="btn-baron">{{ p }} </a>{% endif %}</li>-->
+								<!--{% endfor %}-->
+							   <!--{% endif %}-->
+							  <!--<li><a {% if Packlist.has_next %}href="?page={{ Packlist.next_page_number }}&service_name={{ service_name }}&eval_start_date={{eval_start_date}}&cp_companies={{ cp_id }}" class="btn-baron" {% else %} class="muted btn-baron"{% endif %}>بعد</a></li>-->
+						  <!--</ul>-->
+					  <!--</div>-->
+				  <!--{% endif %}-->
+			<!--</div>-->
+			<!--<div class="col-md-4"></div>-->
+		<!--</div>-->
+		<div class="row" style="padding-bottom: 20px">
+			<div class="col-md-4" style="margin-top: 10px">
+				<a href="{% url 'add_transaction' %}" class="btn-baron">افزودن مبادله</a>
+			</div>
+			<div class="col-md-4" style="margin-top: 10px">
+				<a href="{% url 'addcompany' %}" class="btn-baron">افزودن شرکت</a>
+			</div>
+			<div class="col-md-4" style="margin-top: 10px">
+				<a href="{% url 'logout' %}" class="btn-baron"> خروج </a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

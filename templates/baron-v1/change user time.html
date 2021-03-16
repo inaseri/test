@@ -1,0 +1,106 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+
+{% block title %}اصلاح ساعت کاری{% endblock %}
+
+{% block js %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+    <script>
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+    </script>
+    <script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+
+{% endblock %}
+
+{% block css %}
+
+<style>
+    @media only screen and (max-width: 998px) {
+        .hideAll {
+            display: none;
+        }
+    }
+    @media only screen and (min-width: 998px) {
+        .showAll {
+            display: none;
+        }
+    }
+</style>
+
+<link href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {% load Iman %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-4">
+                    <h2 style="font-family: bnazanin;" >اصلاح ساعت کاری</h2>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <button class="btn-baron" name="newTime"><img style="width: 15%;" src="{% static 'theme1/images/ic-Plus.png' %}"> </button>
+                </div>
+                <div class="col-md-3"></div>
+                <div class="col-md-2">
+                    <a class="btn-baron" href="{% url 'admint' %}" style="font-family: bnazanin; font-size: 25px;">برگشت</a>
+                </div>
+                <hr style="width: 100%; color: grey;">
+            </div>
+            {% for times in sTime %}
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="btn-baron">ساعت ورود</p>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="btn-baron" value="{{ times }}" name="{{ forloop.counter0 }}">
+                    </div>
+                    <div class="col-md-2">
+                        <p class="btn-baron">ساعت خروج</p>
+                    </div>
+                    <div class="col-md-3">
+                        <input class="btn-baron" value="{{ eTime|at_index:forloop.counter0 }}" name="{{ "out"|convertToStr:forloop.counter0 }}">
+                    </div>
+                    <div class="col-md-1">
+                        {{ forloop.counter0 }}
+                         <button class="btn-baron" style="height: 10%; width: 60%;" name="{{ forloop.counter0 }}">
+                             <img src="{% static 'theme1/images/ic-Minus.png' %}"  style="height: 10%; width: 70%;">
+                         </button>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="row">
+                <hr style="color:grey; width: 100%;">
+                <div class="col-md-4">
+                    <a class="btn-baron" href="{% url 'logout' %}">خروج از سیستم</a>
+                </div>
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button class="btn-baron" name="changeTime">به روز رسانی</button>
+                </div>
+            </div>
+        </form>
+	</div>
+{% endblock %}

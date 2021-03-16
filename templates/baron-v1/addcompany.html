@@ -1,0 +1,90 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+{% block title %}افزودن شرکت{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+<script>
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+</script>
+<script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+{% endblock %}
+{% block css %}
+<link href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+{% endblock %}
+{% block body %}
+  <body>
+
+    <div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				{% if error %}
+					ثبت شرکت با خطا مواجه شده است.
+				{% endif %}
+				{% if result %}
+					ثبت شرکت با موفقیت انجام شد.
+				{% endif %}
+			</div>
+		</div>
+		<div class="row" style="margin-top: 40px;">
+			<div class="col-md-4"></div>
+			<div class="col-md-4">
+				<p class="btn-baron">افزودن شرکت</p>
+			</div>
+			<div class="col-md-4"></div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<form method="post">
+                    {% csrf_token %}
+					<div class="row">
+						<div class="col-md-2">
+							  <p class="btn-baron">نام شرکت پدر</p>
+						</div>
+						<div class="col-md-2">
+                            <select name="parent" class="btn-baron">
+                                <option>انتخاب کنید</option>
+                                {% for company in companies %}
+                                    <option value="{{ company.id }}">{{ company.name }}</option>
+                                {% endfor %}
+                            </select>
+						</div>
+						<div class="col-md-6">
+                            <input name="name" class="btn-baron">
+						</div>
+            <div class="col-md-2">
+              <button type="submit" class="btn-baron">ذخیره</button>
+            </div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 450px">
+			<div class="col-md-2">
+				<a href="{% url 'transactions' %}" class="btn-baron">تمامی مبادلات</a>
+			</div>
+			<div class="col-md-3"></div>
+			<div class="col-md-2">
+				<a href="{% url 'logout' %}" class="btn-baron"> خروج </a>
+			</div>
+			<div class="col-md-3"></div>
+			<div class="col-md-2">
+				<a href="{% url 'add_transaction' %}" class="btn-baron">افزودن مبادله</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,372 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    مبادلات
+{% endblock %}
+{% block css %}
+  <link href="{% static 'theme2/css/style.css' %}" rel="stylesheet">
+  <link href="{% static 'theme2/css/daterangepicker.css' %}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{% static 'theme2/css/datepicker-theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
+{% endblock %}
+
+{% block body %}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <!-- Links -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'transactions' %}">تمامی تراکنش ها</a>
+                </li>
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_transaction' %}">افزودن مبادله</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'addcompany' %}">افزودن شرکت</a>
+                    </li>
+		    <li class="nav-item">
+		        <a class="nav-link" href="{% url 'admint' %}">مدیریت ساعت کاری</a>
+		    </li>
+                {% endif %}
+            </ul>
+        </div>
+
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right dropdown-default"
+          aria-labelledby="navbarDropdownMenuLink-333">
+          <a class="dropdown-item" href="{% url 'logout' %}">خروج</a>
+        </div>
+      </li>
+    </ul>
+    </nav>
+</header>
+<div class="container-fluid">
+  {% load humanize %}{% load Iman %}
+        <div id="mainRowPhones">
+        <form method="post">
+        {% csrf_token %}
+            <div class="row" style="margin-top: -65px;">
+                <div class="col-md-12">
+                    <select class="browser-default custom-select" name="company">
+                        <option value="0">همه شرکت ها</option>
+                        {% if parent %}
+                        {% if parent.parent %}
+                        <option value="{{parent.parent.id}}">{{parent.parent}}</option>
+                        {% endif %}
+                        <option value="{{parent.id}}" selected>{{parent}}</option>
+                        {% endif %}
+                        {% for company in comany_name %}
+                        <option value="{{ company.id }}">{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <select class="browser-default custom-select" name="bank">
+                        <option value="0">همه بانک ها</option>
+                        {% for bank in banks %}
+                        <option value="{{ bank.id }}"{% if bank_selected == bank %} selected{% endif %}>{{ bank }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-2">
+                    <div class="md-form">
+                        <input placeholder="تاریخ" type="text" class="form-control jalali-datepicker" name="start_date" {% if start_date %} value="{{start_date}}"{%endif %}>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <h5><span class="badge badge-primary" style="width: 100%; height: 100%; font-family: bnazanin">تا تاریخ</span></h5>
+                </div>
+                <div class="col-md-2" style="margin-top: -5%;">
+                    <div class="md-form">
+                        <input placeholder="تاریخ" type="text" class="form-control jalali-datepicker" name="end_date" {%if end_date %} value="{{end_date}}"{%endif%}>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-default btn-rounded" style="width: 100%;">فیلتر کردن</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <input name="titleforsearch" class="form-control" placeholder="جستجو در عناوین و توضیحات" style="text-align: center;">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <h4><span class="badge badge-primary" style="width: 100%; height: 100%; margin-top: 5%; font-family: bnazanin;">مجموع : {{ sum|intcomma:False }}</span></h4>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row" style="margin-top: 3%;">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="table" class="table-editable">
+                                <table class="table table-bordered table-responsive-md table-striped text-center">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col" style="text-align: center">تصویر</th>
+                                        <th scope="col" style="text-align: center">عنوان</th>
+                                        <th scope="col" style="text-align: center">رقم</th>
+                                        <th scope="col" style="text-align: center">تاریخ</th>
+                                        <th scope="col" style="text-align: center">نام شرکت</th>
+                                        <th scope="col" style="text-align: center">نام بانک</th>
+                                        <th scope="col" style="text-align: center">تضویحات</th>
+                                        <th scope="col" style="text-align: center">ردیف</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for transaction in transactions %}
+                                        <tr>
+                                             <td class="pt-3-half">
+                                                {% if transaction.image %}
+                                                     <span class="table-remove">
+                                                        <a class="btn btn-danger btn-rounded btn-sm my-0" href="{{transaction.image.url}}" class="btn-baron" target="_blank">مشاهده ی تصویر</a>
+                                                     </span>
+                                                {%endif %}
+                                            </td>
+                                            <td>{{ transaction.title }}</td>
+                                            <td>{{ transaction.cash|intcomma }}</td>
+                                            <td>{{ transaction.date_time|jdate:'%y/%m/%d' }}</td>
+                                            <td>{{ transaction.company }}</td>
+                                            <td>{{ transaction.bank}}</td>
+                                            <td>{{ transaction.content }}</td>
+                                            <td>#{{ transaction.id }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        </div>
+        <div id="mainRowCamputer">
+        <form method="post">
+        {% csrf_token %}
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-3">
+                    <select class="browser-default custom-select" name="bank">
+                        <option value="0">همه بانک ها</option>
+                        {% for bank in banks %}
+                        <option value="{{ bank.id }}"{% if bank_selected == bank %} selected{% endif %}>{{ bank }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="browser-default custom-select" name="company">
+                        <option value="0">همه شرکت ها</option>
+                        {% if parent %}
+                        {% if parent.parent %}
+                        <option value="{{parent.parent.id}}">{{parent.parent}}</option>
+                        {% endif %}
+                        <option value="{{parent.id}}" selected>{{parent}}</option>
+                        {% endif %}
+                        {% for company in comany_name %}
+                        <option value="{{ company.id }}">{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-2">
+                    <div class="md-form">
+                        <input placeholder="تاریخ" type="text" class="form-control jalali-datepicker" name="start_date" {% if start_date %} value="{{start_date}}"{%endif %}>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <h4><span class="badge badge-primary" style="width: 100%; height: 100%; margin-top: 15%; font-family: bnazanin;">تا تاریخ</span></h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="md-form">
+                        <input placeholder="تاریخ" type="text" class="form-control jalali-datepicker" name="end_date" {%if end_date %} value="{{end_date}}"{%endif%}>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <input class="form-control" placeholder="جستجو در عنواین و توضیحات" style="text-align: center;" name="titleforsearch">
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-default btn-rounded" style="width: 100%;">فیلتر کردن</button>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <h4><span class="badge badge-primary" style="width: 100%; height: 100%; margin-top: 5%; margin-right: 6px; font-family: bnazanin">مجموع : {{ sum|intcomma:False }}</span></h4>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row" style="margin-top: 3%;">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="table" class="table-editable">
+                                <table class="table table-bordered table-responsive-md table-striped text-center">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col" style="text-align: center">تصویر</th>
+                                        <th scope="col" style="text-align: center">عنوان</th>
+                                        <th scope="col" style="text-align: center">رقم</th>
+                                        <th scope="col" style="text-align: center">تاریخ</th>
+                                        <th scope="col" style="text-align: center">نام شرکت</th>
+                                        <th scope="col" style="text-align: center">نام بانک</th>
+                                        <th scope="col" style="text-align: center">تضویحات</th>
+                                        <th scope="col" style="text-align: center">ردیف</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for transaction in transactions %}
+                                        <tr>
+                                             <td class="pt-3-half">
+                                                {% if transaction.image %}
+                                                     <span class="table-remove">
+                                                        <a class="btn btn-danger btn-rounded btn-sm my-0" href="{{transaction.image.url}}" class="btn-baron" target="_blank">مشاهده ی تصویر</a>
+                                                     </span>
+                                                {%endif %}
+                                            </td>
+                                            <td>{{ transaction.title }}</td>
+                                            <td>{{ transaction.cash|intcomma }}</td>
+                                            <td>{{ transaction.date_time|jdate:'%y/%m/%d' }}</td>
+                                            <td>{{ transaction.company }}</td>
+                                            <td>{{ transaction.bank}}</td>
+                                            <td>{{ transaction.content }}</td>
+                                            <td>#{{ transaction.id }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </form>
+        </div>
+</div>
+{% block js %}
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}" ></script>
+  <script src="{% static 'theme2/js/moment-jalaali.js' %}"></script>
+  <script src="{% static 'theme2/js/daterangepicker-fa-ex.js' %}"></script>
+  <script>
+        $(document).ready(function () {
+        var night;
+        var isRtl = true;
+        var dateFormat = isRtl ? 'jYYYY/jMM/jDD' : 'YYYY/MM/DD';
+        var dateFrom = false ? moment("") : undefined;
+        var dateTo = false ? moment("") : undefined;
+        var $dateRanger = $("#dateRangePicker");
+
+        $dateRanger.daterangepicker({
+            clearLabel: 'Clear',
+            autoUpdateInput: !!(dateFrom && dateTo),
+            minDate: moment(),
+            autoApply: true,
+            opens: isRtl ? 'left' : 'right',
+            locale: {
+                separator: ' - ',
+                format: dateFormat
+            },
+            startDate: dateFrom,
+            endDate: dateTo,
+            jalaali: isRtl,
+            showDropdowns: true
+        }).on('apply.daterangepicker', function (ev, picker) {
+            night = picker.endDate.diff(picker.startDate, 'days');
+            if (night > 0) {
+                $(this).val(picker.startDate.format(dateFormat));
+                $('#dateRangePickerEnd').val(picker.endDate.format(dateFormat));
+            } else {
+                $(this).val('')
+            }
+        });
+
+
+        $('.ga-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            // autoUpdateInput: !!(dateFrom && dateTo),
+            //minDate: moment(),
+            autoApply: true,
+            opens: 'right',
+            singleDatePicker: true,
+            showDropdowns: true,
+            language: 'en'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $('.jalali-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            autoApply: true,
+            opens: 'left',
+            singleDatePicker: true,
+            showDropdowns: true,
+            jalaali: true,
+            language: 'fa'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+            var gagDate = $(this).attr('data-original-title');
+            $('.date-hover').text('');
+            $('.date-hover').text(gagDate);
+
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+    });
+  </script>
+  <script>
+    $("#save").submit(function () {
+		$(".companycp").attr("value",$(".companymain").val());
+    });
+	{% if success %}
+	alert("ثبت مبادله با موفقیت انجام شد");
+	{% endif %}
+    </script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+    <script type="text/javascript">
+    document.getElementById("mainRowCamputer").classList.toggle("hideAll");
+    document.getElementById("mainRowPhones").classList.toggle("showAll");
+</script>
+{% endblock %}
+{% endblock %}

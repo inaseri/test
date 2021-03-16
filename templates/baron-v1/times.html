@@ -1,0 +1,205 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+
+{% block title %}ساعات کاری{% endblock %}
+
+{% block js %}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+    <script>
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+    </script>
+    <script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+
+{% endblock %}
+
+{% block css %}
+
+<style>
+    @media only screen and (max-width: 998px) {
+        .hideAll {
+            display: none;
+        }
+    }
+    @media only screen and (min-width: 998px) {
+        .showAll {
+            display: none;
+        }
+    }
+</style>
+
+<link href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        {% load Iman %}
+
+        <div id="mainRowPhones">
+            <form method="post" id="entertime">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="settime">
+            </form>
+            <div class="row">
+                <div class="col-xs-12">
+                    <button class="btn-baron" type="submit" form="entertime" value="setTime" style="background-color: darkgreen;">تردد</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6" style="margin-top: 10px; font-size: 7px;">
+                    <form method="post" id="setfilter">
+                        {% csrf_token %}
+                        <input name="end_date" class="btn-baron jalali-datepicker" type="text" {%if end_date %} value="{{end_date}}"{%endif%}}>
+                    </form>
+                </div>
+                <div class="col-xs-6" style="margin-top: 10px; font-size: 7px;">
+                    <button type="submit" class="btn-baron" form="setfilter">فیلتر</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 15px; ">
+                <div class="col-xs-6" style="font-size: 7px;">
+                    <p class="btn-baron">{{sum|sectotime}}</p>
+                </div>
+                <div class="col-xs-6" style="font-size: 7px;">
+                    <a href="{% url 'logout' %}" class="btn-baron">خروج</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <a href="{% url 'getVacation' %}" class="btn-baron">ثبت توضیحات</a>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-xs-12">
+                    <table class="table table-striped" dir="ltr" border=".5" align="center" style="color: green; font-family: bnazanin; font-size: 14px;" >
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center">مجموع</th>
+                                <th scope="col" style="text-align: center">توضیحات</th>
+                                <th scope="col" style="text-align: center"> خروج</th>
+                                <th scope="col" style="text-align: center"> ورود</th>
+                                <th scope="col" style="text-align: center">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for times in time %}
+                            <tr>
+                                <td>{{times.sum|time:"H:i:s"}}</td>
+                                <td>{{times.desc}}</td>
+                                <td>
+                                    {% for i in times.times.etime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in times.times.stime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>{{times.date|jdate:'%y/%m/%d'}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="mainRowCamputer">
+            <div class="row">
+                <div class="col-md-12"></div>
+            </div>
+            <form method="post" id="entertime">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="settime">
+            </form>
+            <div class="row">
+                <div class="col-md-4" style="margin-top: 10px">
+                    <button class="btn-baron" type="submit" form="entertime" value="setTime">ثبت تردد</button>
+                </div>
+                <div class="col-md-4" style="margin-top: 10px">
+                    <form method="post" id="setfilterCamp">
+                        {% csrf_token %}
+                        <input name="end_date" class="btn-baron jalali-datepicker" type="text" {%if end_date %} value="{{end_date}}"{%endif%}}>
+                    </form>
+                </div>
+                <div class="col-md-4" style="margin-top: 10px">
+                    <button type="submit" class="btn-baron" form="setfilterCamp">فیلتر کردن</button>
+                </div>
+            </div>
+            <div class="row" style="margin-bottom: 20px"></div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-md-12">
+                    <table class="table table-striped" dir="ltr" border=".5" width="100%"   cellpadding="4" cellspacing="3" align="center" style="color: green" >
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center">مجموع</th>
+                                <th scope="col" style="text-align: center">توضیحات</th>
+                                <th scope="col" style="text-align: center">ساعت خروج</th>
+                                <th scope="col" style="text-align: center">ساعت ورود</th>
+                                <th scope="col" style="text-align: center">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for times in time %}
+                            <tr>
+                                <td>{{times.sum|time:"H:i:s"}}</td>
+                                <td>{{ times.desc }}</td>
+                                <td>
+                                    {% for i in times.times.etime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in times.times.stime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>{{times.date|jdate:'%y/%m/%d'}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row" style="padding-bottom: 20px">
+			<div class="col-md-3">
+				<p class="btn-baron">{{ user }}</p>
+			</div>
+			<div class="col-md-3">
+				<p class="btn-baron">مجموع ساعات کاری {{sum|sectotime}}</p>
+			</div>
+			<div class="col-md-3">
+				<a href="{% url 'logout' %}" class="btn-baron"> خروج از سیستم</a>
+			</div>
+            <div class="col-md-3">
+                <a href="{% url 'getVacation' %}" class="btn-baron">ثبت توضیحات</a>
+            </div>
+		</div>
+        </div>
+
+        <script type="text/javascript">
+            document.getElementById("mainRowCamputer").classList.toggle("hideAll")
+            document.getElementById("mainRowPhones").classList.toggle("showAll")
+        </script>
+	</div>
+{% endblock %}

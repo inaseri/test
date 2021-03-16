@@ -1,0 +1,191 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    ویرایش ساعت کاری
+{% endblock %}
+{% block css %}
+{% endblock %}
+
+{% block body %}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+     <a class="navbar-brand" href="{% url 'admint' %}" style="color: white;">
+        <img src="{% static 'theme2/img/svg/ic-Back.svg' %}" style="height: 35px; width: 35px;">
+        <strong style="font-family: bnazanin; margin-left: -10px;">برگشت</strong>
+    </a>
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right dropdown-default"
+          aria-labelledby="navbarDropdownMenuLink-333">
+          <a class="dropdown-item" href="{% url 'logout' %}">خروج</a>
+        </div>
+      </li>
+    </ul>
+    </nav>
+</header>
+    <div class="container-fluid">
+    {% load Iman %}
+        <div id="mainRowPhones">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row" style="margin-top: -80px;">
+                    <div class="col-12">
+                        <button class="btn btn-amber" name="newTime" style="margin-left: 0px;"><img style="width: 10%; margin-top: -6px;" src="{% static 'theme1/images/ic-Plus.png' %}"> </button>
+                    </div>
+                </div>
+                {% for times in sTime %}
+                    <div class="row" style="margin-top: -12px;">
+                        <div class="col-1"></div>
+                        <div class="col-5 md-form" style="margin-left: -5px;">
+                            <input class="btn-dark-green form-control" value="{{ eTime|at_index:forloop.counter0 }}" name="{{ "out"|convertToStr:forloop.counter0 }}" style="text-align: center;">
+                            <span class="badge badge-info">ساعت خروج</span>
+                        </div>
+                        <div class="col-5 md-form" style="margin-left: -5px;">
+                            <input class="form-control btn-dark-green" value="{{ times }}" name="{{ forloop.counter0 }}" style="text-align: center;">
+                            <span class="badge badge-info">ساعت ورود</span>
+                        </div>
+                        <div class="col-2"></div>
+                    </div>
+                {% endfor %}
+                <div class="row" style="margin-top: -5px;">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-2">
+                        <button class="btn btn-danger" name="changeTime" style="margin-left: 0px;">به روز رسانی</button>
+                    </div>
+                    <div class="col-md-5"></div>
+                </div>
+            </form>
+        </div>
+        <div id="mainRowCamputer">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row" style="margin-top: -55px;">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-2">
+                        <button class="btn btn-amber" name="newTime" style="margin-left: 0px;"><img style="width: 35%; margin-top: -6px;" src="{% static 'theme1/images/ic-Plus.png' %}"> </button>
+                    </div>
+                    <div class="col-md-5"></div>
+                </div>
+                {% for times in sTime %}
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-2 md-form" style="margin-left: -5px;">
+                            <input class="btn-dark-green form-control" value="{{ eTime|at_index:forloop.counter0 }}" name="{{ "out"|convertToStr:forloop.counter0 }}" style="text-align: center;">
+                        </div>
+                        <div class="col-md-2" style="margin-left: -5px;">
+                            <p class="btn btn-default" style="height: 42%; margin-top: 14%;">ساعت خروج</p>
+                        </div>
+                        <div class="col-md-2 md-form" style="margin-left: -5px;">
+                            <input class="form-control btn-dark-green" value="{{ times }}" name="{{ forloop.counter0 }}" style="text-align: center;">
+                        </div>
+                        <div class="col-md-2" style="margin-left: -5px;">
+                            <p class="btn btn-default" style="height: 42%; margin-top: 14%;">ساعت ورود</p>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-5"></div>
+                    <div class="col-md-2">
+                        <button class="btn btn-danger" name="changeTime" style="margin-left: 0px;">به روز رسانی</button>
+                    </div>
+                    <div class="col-md-5"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% block js %}
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}" ></script>
+  <script src="{% static 'theme2/js/moment-jalaali.js' %}"></script>
+  <script src="{% static 'theme2/js/daterangepicker-fa-ex.js' %}"></script>
+  <script>
+        $(document).ready(function () {
+        var night;
+        var isRtl = true;
+        var dateFormat = isRtl ? 'jYYYY/jMM/jDD' : 'YYYY/MM/DD';
+        var dateFrom = false ? moment("") : undefined;
+        var dateTo = false ? moment("") : undefined;
+        var $dateRanger = $("#dateRangePicker");
+
+        $dateRanger.daterangepicker({
+            clearLabel: 'Clear',
+            autoUpdateInput: !!(dateFrom && dateTo),
+            minDate: moment(),
+            autoApply: true,
+            opens: isRtl ? 'left' : 'right',
+            locale: {
+                separator: ' - ',
+                format: dateFormat
+            },
+            startDate: dateFrom,
+            endDate: dateTo,
+            jalaali: isRtl,
+            showDropdowns: true
+        }).on('apply.daterangepicker', function (ev, picker) {
+            night = picker.endDate.diff(picker.startDate, 'days');
+            if (night > 0) {
+                $(this).val(picker.startDate.format(dateFormat));
+                $('#dateRangePickerEnd').val(picker.endDate.format(dateFormat));
+            } else {
+                $(this).val('')
+            }
+        });
+
+
+        $('.ga-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            // autoUpdateInput: !!(dateFrom && dateTo),
+            //minDate: moment(),
+            autoApply: true,
+            opens: 'right',
+            singleDatePicker: true,
+            showDropdowns: true,
+            language: 'en'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $('.jalali-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            autoApply: true,
+            opens: 'left',
+            singleDatePicker: true,
+            showDropdowns: true,
+            jalaali: true,
+            language: 'fa'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+            var gagDate = $(this).attr('data-original-title');
+            $('.date-hover').text('');
+            $('.date-hover').text(gagDate);
+
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+    });
+  </script>
+  <script>
+    $("#save").submit(function () {
+		$(".companycp").attr("value",$(".companymain").val());
+    });
+	{% if success %}
+	alert("ثبت مبادله با موفقیت انجام شد");
+	{% endif %}
+    </script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+    <script type="text/javascript">
+    document.getElementById("mainRowCamputer").classList.toggle("hideAll");
+    document.getElementById("mainRowPhones").classList.toggle("showAll");
+</script>
+{% endblock %}
+{% endblock %}

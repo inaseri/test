@@ -1,0 +1,236 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    مدیریت ساعت کاری
+{% endblock %}
+{% block css %}
+  <link href="{% static 'theme2/css/daterangepicker.css' %}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{% static 'theme2/css/datepicker-theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
+{% endblock %}
+{% block js %}
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}" ></script>
+  <script src="{% static 'theme2/js/moment-jalaali.js' %}"></script>
+  <script src="{% static 'theme2/js/daterangepicker-fa-ex.js' %}"></script>
+  <script>
+        $(document).ready(function () {
+        var night;
+        var isRtl = true;
+        var dateFormat = isRtl ? 'jYYYY/jMM/jDD' : 'YYYY/MM/DD';
+        var dateFrom = false ? moment("") : undefined;
+        var dateTo = false ? moment("") : undefined;
+        var $dateRanger = $("#dateRangePicker");
+
+        $dateRanger.daterangepicker({
+            clearLabel: 'Clear',
+            autoUpdateInput: !!(dateFrom && dateTo),
+            minDate: moment(),
+            autoApply: true,
+            opens: isRtl ? 'left' : 'right',
+            locale: {
+                separator: ' - ',
+                format: dateFormat
+            },
+            startDate: dateFrom,
+            endDate: dateTo,
+            jalaali: isRtl,
+            showDropdowns: true
+        }).on('apply.daterangepicker', function (ev, picker) {
+            night = picker.endDate.diff(picker.startDate, 'days');
+            if (night > 0) {
+                $(this).val(picker.startDate.format(dateFormat));
+                $('#dateRangePickerEnd').val(picker.endDate.format(dateFormat));
+            } else {
+                $(this).val('')
+            }
+        });
+
+
+        $('.ga-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            // autoUpdateInput: !!(dateFrom && dateTo),
+            //minDate: moment(),
+            autoApply: true,
+            opens: 'right',
+            singleDatePicker: true,
+            showDropdowns: true,
+            language: 'en'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $('.jalali-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            autoApply: true,
+            opens: 'left',
+            singleDatePicker: true,
+            showDropdowns: true,
+            jalaali: true,
+            language: 'fa'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+            var gagDate = $(this).attr('data-original-title');
+            $('.date-hover').text('');
+            $('.date-hover').text(gagDate);
+
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+    });
+  </script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<header>
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <!-- Links -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'transactions' %}">تمامی تراکنش ها</a>
+                </li>
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_transaction' %}">افزودن مبادله</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'addcompany' %}">افزودن شرکت</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admint' %}">مدیریت ساعت کاری</a>
+                </li>
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">لیست کارمندان</a>
+                    <div class="dropdown-menu dropdown-primary" aria-labelledby="navbarDropdownMenuLink">
+                        {% for users in user %}
+                            <div class="row">
+                                <div class="col-md-2 col-2"></div>
+                                <div class="col-md-6 col-6">
+                                    <a class="btn badge-info" name="selectedUser" href="?id={{users.id}}">{{users}}</a>
+                                </div>
+                                <div class="col-md-4 col-2"></div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </li>
+                </ul>
+        </div>
+
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right dropdown-default"
+          aria-labelledby="navbarDropdownMenuLink-333">
+          <a class="dropdown-item" href="{% url 'logout' %}">خروج</a>
+        </div>
+      </li>
+    </ul>
+    </nav>
+    <!--/.Navbar-->
+</header>
+    <div class="container-fluid">
+    {% load Iman %}
+
+        <form method="post" name="setfilter" id="setfilter" class="form-group">
+            {% csrf_token %}
+            <div class="row" style="margin-top: -80px;">
+                <div class="col-md-3"></div>
+                <div class="col-md-2" style="margin-top: 15px;">
+                    <div class="card-body" style="background-color: #f1f1f1; border-radius: 10px;">
+                        <h4 class="card-title" style="text-align: right;">انتخاب تاریخ</h4>
+                        <div class="md-form" style="width: 100%;">
+                            <input class="jalali-datepicker" style="text-align: center; background: center;" name="end_date">
+                        </div>
+                        <button type="submit" class="btn btn-dark-green btn-md" style="font-size: 18px;">فیلتر کردن</button>
+                    </div>
+                </div>
+                <div class="col-md-2" style="margin-top: 15px;">
+                    <div class="card-body" style="background-color: #f1f1f1; border-radius: 10px;">
+                        <h4 class="card-title" style="text-align: right;">خروجی اکسل</h4>
+                        <p class="card-text" style="text-align: center;">دریافت لیست ساعت کاری کارمندان در قالب اکسل</p>
+                        <a href="{% url 'export_users_xls' year=year month=month %}" class="btn btn-dark-green btn-md" style="font-size: 18px;">دریافت خروجی</a>
+                    </div>
+                </div>
+                <div class="col-md-2" style="margin-top: 15px;">
+                    <div class="card-body" style="background-color: #f1f1f1; border-radius: 10px;">
+                        <h4 class="card-title" style="text-align: right;">مجموع ساعت کاری</h4>
+                        <p class="card-text" style="text-align: center; margin-top: 35px;">{{ owners.get_full_name }}</p>
+                        <button type="button" class="btn btn-dark-green btn-md" style="font-size: 18px;">{{sum|sectotime}}</button>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </form>
+        <div class="row" style="margin-bottom: 50px;">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div id="table" class="table-editable">
+                            <table class="table table-bordered table-responsive-md table-striped text-center">
+                                <thead>
+                                <tr>
+                                    {% if request.user.is_superuser %}
+                                        <th scope="col" style="text-align: center">ویرایش</th>
+                                    {% endif %}
+                                    <th scope="col" style="text-align: center">مجموع</th>
+                                    <th scope="col" style="text-align: center">توضیحات</th>
+                                    <th scope="col" style="text-align: center">ساعت خروج</th>
+                                    <th scope="col" style="text-align: center">ساعت ورود</th>
+                                    <th scope="col" style="text-align: center">تاریخ</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for times in time %}
+                                    {% load Iman %}
+                                    <tr>
+                                        {% if request.user.is_superuser %}
+                                            <td><a class="btn-baron" href="{% url 'changeTime' times.id %}" name="change">ویرایش</a></td>
+                                        {% endif %}
+                                        <td>{{times.sum|time:"H:i:s"}}</td>
+                                        <td>{{times.desc}}</td>
+                                        <td>
+                                            {% for i in times.times.etime%}
+                                                {{i}}<br/>
+                                            {% endfor %}
+                                        </td>
+                                        <td>
+                                            {% for i in times.times.stime%}
+                                                {{i}}<br/>
+                                            {% endfor %}
+                                        </td>
+                                        <td>{{times.date|jdate:'%y/%m/%d'}}</td>
+                                    </tr>
+                                    {% if request.user.is_superuser %}
+                                        <a style="width: 100%; height: 100%; color: green;"></a>
+                                    {% endif %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+{% endblock %}

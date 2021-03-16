@@ -1,0 +1,329 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+{% block title %}مدیریت ساعت کاری{% endblock %}
+{% block js %}
+<script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+<script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+<script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+<script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+{% endblock %}
+{% block css %}
+<style>
+    .calendar.left.single {
+        width: 200px;
+    }
+
+    .monthselect.form-control {
+        float: left;
+    }
+
+    /*.table-condensed thead tr:nth-child(2),*/
+    /*.table-condensed tbody {*/
+        /*display: none*/
+    /*}*/
+
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    #sidbar {
+        position: fixed;
+        right: 5px;
+        width: 250px;
+        /*min-height: 500px;*/
+        height: 100%;
+        top: 0px;
+        background: rgba(76, 140, 77, 0.84);
+        border-radius: 5px;
+    }
+
+    #sidbar ul li {
+        color: white;
+        list-style: none;
+        padding: 30px 10%;
+        border-bottom: 1px solid white;
+    }
+
+    /*.toggle-btn {*/
+        /*width: 45px;*/
+        /*height: 32px;*/
+        /*right: 0px;*/
+        /*background: gray;*/
+        /*display: none;*/
+        /*padding: 6px;*/
+        /*cursor: pointer;*/
+    /*}*/
+
+    /*.toggle-btn span {*/
+        /*width: 30px;*/
+        /*height: 2px;*/
+        /*background: black;*/
+        /*display: block;*/
+        /*margin-bottom: 6px;*/
+    /*}*/
+
+ /* Navbar container */
+.navbar {
+    overflow: hidden;
+    background-color: white;
+}
+
+/* Dropdown button */
+.dropdown .dropbtn {
+    cursor: pointer;
+    font-size: 16px;
+    border: #2b542c;
+    outline: none;
+    color: white;
+    padding: 14px 16px;
+    background-color: inherit;
+    font-family: inherit; /* Important for vertical align on mobile phones */
+    margin: 0; /* Important for vertical align on mobile phones */
+    display: none;
+}
+
+/* Add a red background color to navbar links on hover */
+.navbar a:hover, .dropdown:hover .dropbtn {
+    background-color: white;
+}
+
+/* Dropdown content (hidden by default) */
+.dropdown-content {
+    display: none;
+    position: fixed;
+    background-color: green;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    float: none;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+/* Add a grey background color to dropdown links on hover */
+.dropdown-content a:hover {
+    background-color: white;
+}
+
+.show {
+    display: block;
+
+}
+
+
+
+/* Show the dropdown menu on hover */
+/*.dropdown:hover .dropdown-content {*/
+    /*display: block;*/
+    /**/
+/*}*/
+
+    @media only screen and (max-width: 992px) {
+
+        #sidbar {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .navbar {
+            display: block;
+        }
+
+        .dropdown .dropbtn {
+            display: block;
+        }
+
+
+        .hidetable {
+            display: none;
+        }
+
+        .hidefilter {
+            display: none;
+        }
+
+        .hidedownrow {
+            display: none;
+        }
+    }
+
+</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+{% endblock %}
+{% block body %}
+<div class="container">
+    <div class="row navbar">
+        <div class="col-md-2 dropdown">
+            <button class="dropbtn" style="color: #2b542c"  onclick="myFunction()">لیست کارمندان
+                <i class="fa fa-caret-down"></i>
+            </button>
+            <div class="dropdown-content" id="myDropdown">
+                {% for users in user %}
+                    <a href="?id={{users.id}}">{{users}}</a>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-10"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            <div id="sidbar">
+                <ul>
+                    {% for users in user %}
+                    <li>
+                        <a class="btn-baron" name="selectedUser" href="?id={{users.id}}">{{users}}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <form method="post" id="setfilter" class="form-group" name="setfilter">
+                <div class="row">
+                    <div class="col-md-4" style="margin-top: 10px">
+                        <label class="btn-baron">{{ owners.username }}</label>
+                    </div>
+
+                    {% csrf_token %}
+                    <div class="col-md-4" style="margin-top: 10px">
+                        <input name="end_date" class="btn-baron jalali-datepicker" type="text" name="datepicker"
+                               value="{{end_date}}">
+                    </div>
+
+                    <div class="col-md-4" style="margin-top: 10px">
+                        <button class="btn-baron ts" type="submit">فیلتر کردن</button>
+                    </div>
+                </div>
+            </form>
+            <div class="row" style="margin-top: 20px" id="mytable">
+                <div class="col-md-12">
+                    <table class="table" dir="ltr" border=".5" width="100%" cellpadding="4" cellspacing="3"
+                           align="center" style="color: green">
+                        <thead>
+                        <tr>
+                            {% if request.user.is_superuser %}
+                                <th scope="col" style="text-align: center">ویرایش</th>
+                            {% endif %}
+                            <th scope="col" style="text-align: center">مجموع</th>
+                            <th scope="col" style="text-align: center">توضیحات</th>
+                            <th scope="col" style="text-align: center">ساعت خروج</th>
+                            <th scope="col" style="text-align: center">ساعت ورود</th>
+                            <th scope="col" style="text-align: center">تاریخ</th>
+                        </tr>
+                        {% for times in time %}
+                        {% load Iman %}
+                        <tr>
+                            {% if request.user.is_superuser %}
+                                <td><a class="btn-baron" href="{% url 'changeTime' times.id %}" name="change">ویرایش</a></td>
+                            {% endif %}
+                            <td>{{times.sum|time:"H:i:s"}}</td>
+                            <td>{{times.desc}}</td>
+                            <td>
+                                {% for i in times.times.etime%}
+                                {{i}}<br/>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for i in times.times.stime%}
+                                {{i}}<br/>
+                                {% endfor %}
+                            </td>
+                            <td>{{times.date|jdate:'%y/%m/%d'}}</td>
+                        </tr>
+                            {% if request.user.is_superuser %}
+                                <a style="width: 100%; height: 100%; color: green;"></a>
+                            {% endif %}
+                        {% endfor %}
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="downrow">
+        <div class="col-md-3"></div>
+        <div class="col-md-3">
+            <p class="btn-baron">مجموع ساعات کاری {{sum|sectotime}}</p>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'logout' %}" class="btn-baron"> خروج از سیستم</a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'export_users_xls' year=year month=month %}" class="btn-baron">خروجی اکسل</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="assets/js/moment.min.js" type="text/javascript"></script>
+<script src="assets/js/moment-jalaali.js"></script>
+<script src="assets/js/daterangepicker-fa-ex.js"></script>
+<script>
+    $(document).ready(function () {
+
+        $('.jalali-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            autoApply: true,
+            opens: 'left',
+            singleDatePicker: true,
+            showDropdowns: true,
+            jalaali: true,
+            language: 'fa'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+            var gagDate = $(this).attr('data-original-title');
+            $('.date-hover').text('');
+            $('.date-hover').text(gagDate);
+
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+    });
+
+    function myFunction() {
+       document.getElementById("myDropdown").classList.toggle("show");
+    }
+
+    // Close the dropdown if the user clicks outside of it
+    window.onclick = function(e) {
+      if (!e.target.matches('.dropbtn')) {
+      var myDropdown = document.getElementById("myDropdown");
+        if (myDropdown.classList.contains('show')) {
+          myDropdown.classList.remove('show');
+        }
+      }
+        document.getElementById("mytable").classList.toggle("hidetable")
+        document.getElementById("setfilter").classList.toggle("hidefilter")
+        document.getElementById("downrow").classList.toggle("hidedownrow")
+    }
+</script>
+    <script>
+    jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+    window.location = $(this).data("href");
+    });
+    });
+    </script>
+
+{% endblock %}

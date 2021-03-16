@@ -1,0 +1,59 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    ورود
+{% endblock %}
+{% block css %}
+{% endblock %}
+{% block js %}
+{% endblock %}
+
+{% block body %}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">ورود</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>
+    <div class="container-fluid">
+        <form method="post">
+            {% csrf_token %}
+            <div style="margin-top: 15px;" class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="md-form">
+                        <i class="fas fa-user prefix"></i>
+                        <input type="text" id="inputIconEx2" class="form-control" name="username" placeholder="نام کاربری" style="text-align: center;">
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div style="margin-top: 15px;" class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <div class="md-form">
+                        <i class="fas fa-lock prefix"></i>
+                        <input type="password" id="inputIconEx2" class="form-control" name="password" style="text-align: center;" placeholder="رمز عبور">
+                    </div>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div style="margin-top: 15px;" class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button class="btn aqua-gradient" style="margin-left: -1px;">ورود</button>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

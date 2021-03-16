@@ -1,0 +1,274 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    ساعت کاری
+{% endblock %}
+{% block css %}
+  <link href="{% static 'theme2/css/daterangepicker.css' %}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{% static 'theme2/css/datepicker-theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
+{% endblock %}
+
+{% block body %}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <ul class="navbar-nav mr-auto">
+                {% if request.user.is_superuser %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'transactions' %}">تمامی تراکنش ها</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'add_transaction' %}">افزودن مبادله</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'addcompany' %}">افزودن شرکت</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admint' %}">مدیریت ساعت کاری</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        <ul class="navbar-nav ml-auto nav-flex-icons">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-default"
+                    aria-labelledby="navbarDropdownMenuLink-333">
+                    <a class="dropdown-item" href="{% url 'logout' %}">خروج</a>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+</header>
+    <div class="container-fluid">
+    {% load Iman %}
+        <div id="mainRowPhones">
+            <form method="post" id="entertime">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="settime">
+            </form>
+            <div class="row" style="margin-top: -80px;">
+                <div class="col-md-12">
+                    <button class="btn btn-success btn-rounded" type="submit" form="entertime" value="setTime" style="border-radius: 15px; margin-left: 0px;">تردد</button>
+                </div>
+            </div>
+            <div class="row" style="margin-top: -15px;">
+                <div class="col-md-6 md-form">
+                    <form method="post" id="setfilter">
+                        {% csrf_token %}
+                        <input name="end_date" class="form-control jalali-datepicker" type="text" {%if end_date %} value="{{end_date}}"{%endif%}}>
+                    </form>
+                </div>
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-outline-success btn-rounded waves-effect" form="setfilter" style="border-radius: 15px; margin-left: 0px;">فیلتر کردن</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{% url 'getVacation' %}" class="btn btn-outline-default waves-effect" style="margin-left: 0px; border-radius: 15px;">ثبت توضیحات</a>
+                </div>
+            </div>
+            <div class="row" >
+                <div class="col-md-12">
+                    <span class="badge badge-pill badge-default" style="width: 100%; height: 100%; font-size: 16px;">{{sum|sectotime}}</span>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 20px; margin-bottom: 30px;">
+                <div class="col-md-12">
+                    <table class="table table-bordered table-responsive-md table-striped text-center" dir="ltr" border=".5" align="center" >
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center">مجموع</th>
+                                <th scope="col" style="text-align: center">توضیحات</th>
+                                <th scope="col" style="text-align: center"> خروج</th>
+                                <th scope="col" style="text-align: center"> ورود</th>
+                                <th scope="col" style="text-align: center">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for times in time %}
+                            <tr>
+                                <td>{{times.sum|time:"H:i:s"}}</td>
+                                <td>{{times.desc}}</td>
+                                <td>
+                                    {% for i in times.times.etime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in times.times.stime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>{{times.date|jdate:'%y/%m/%d'}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="mainRowCamputer">
+            <form method="post" id="entertime">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="settime">
+            </form>
+            <div class="row" style="margin-top: -60px;">
+                <div class="col-md-2"></div>
+                <div class="col-md-2">
+				    <button class="btn btn-default" type="button" style="font-size: 18px; border-radius: 15px;">{{sum|sectotime}}</button>
+			    </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-default" form="setfilterCamp" style="border-radius: 15px;">فیلتر کردن</button>
+                </div>
+                <div class="col-md-2">
+                    <form method="post" id="setfilterCamp">
+                        {% csrf_token %}
+                        <input name="end_date" class="btn btn-default jalali-datepicker" type="text" style="border-radius: 15px;" {%if end_date %} value="{{end_date}}"{%endif%}}>
+                    </form>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-default" type="submit" form="entertime" value="setTime" style="border-radius: 15px;">ثبت تردد</button>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row" style="margin-top: 20px;">
+                <div class="col-md-2"></div>
+                <div class="col-md-8">
+                    <table class="table table-bordered table-responsive-md table-striped text-center" dir="ltr" border=".5" align="center" >
+                        <thead>
+                            <tr>
+                                <th scope="col" style="text-align: center">مجموع</th>
+                                <th scope="col" style="text-align: center">توضیحات</th>
+                                <th scope="col" style="text-align: center">ساعت خروج</th>
+                                <th scope="col" style="text-align: center">ساعت ورود</th>
+                                <th scope="col" style="text-align: center">تاریخ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for times in time %}
+                            <tr>
+                                <td>{{times.sum|time:"H:i:s"}}</td>
+                                <td>{{ times.desc }}</td>
+                                <td>
+                                    {% for i in times.times.etime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {% for i in times.times.stime%}
+                                    {{i}}<br/>
+                                    {% endfor %}
+                                </td>
+                                <td>{{times.date|jdate:'%y/%m/%d'}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-4">
+                    <p class="btn btn-default" style="border-radius: 15px;">{{ request.user.get_full_name }}</p>
+                </div>
+                <div class="col-md-4">
+                    <a href="{% url 'getVacation' %}" class="btn btn-default" style="border-radius: 15px;">ثبت توضیحات</a>
+                </div>
+                <div class="col-md-2"></div>
+            </div>
+		</div>
+        </div>
+    </div>
+{% block js %}
+    <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}" ></script>
+    <script src="{% static 'theme2/js/moment-jalaali.js' %}"></script>
+    <script src="{% static 'theme2/js/daterangepicker-fa-ex.js' %}"></script>
+    <script>
+    $(document).ready(function () {
+    var night;
+    var isRtl = true;
+    var dateFormat = isRtl ? 'jYYYY/jMM/jDD' : 'YYYY/MM/DD';
+    var dateFrom = false ? moment("") : undefined;
+    var dateTo = false ? moment("") : undefined;
+    var $dateRanger = $("#dateRangePicker");
+
+    $dateRanger.daterangepicker({
+    clearLabel: 'Clear',
+    autoUpdateInput: !!(dateFrom && dateTo),
+    minDate: moment(),
+    autoApply: true,
+    opens: isRtl ? 'left' : 'right',
+    locale: {
+    separator: ' - ',
+    format: dateFormat
+    },
+    startDate: dateFrom,
+    endDate: dateTo,
+    jalaali: isRtl,
+    showDropdowns: true
+    }).on('apply.daterangepicker', function (ev, picker) {
+    night = picker.endDate.diff(picker.startDate, 'days');
+    if (night > 0) {
+    $(this).val(picker.startDate.format(dateFormat));
+    $('#dateRangePickerEnd').val(picker.endDate.format(dateFormat));
+    } else {
+    $(this).val('')
+    }
+    });
+
+
+    $('.ga-datepicker').daterangepicker({
+    clearLabel: 'Clear',
+    // autoUpdateInput: !!(dateFrom && dateTo),
+    //minDate: moment(),
+    autoApply: true,
+    opens: 'right',
+    singleDatePicker: true,
+    showDropdowns: true,
+    language: 'en'
+    }).on('apply.daterangepicker', function () {
+    $('.tooltip').hide();
+    $('.date-select').text($(this).val());
+    });
+
+    $('.jalali-datepicker').daterangepicker({
+    clearLabel: 'Clear',
+    autoApply: true,
+    opens: 'left',
+    singleDatePicker: true,
+    showDropdowns: true,
+    jalaali: true,
+    language: 'fa'
+    }).on('apply.daterangepicker', function () {
+    $('.tooltip').hide();
+    $('.date-select').text($(this).val());
+    });
+
+    $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+    var gagDate = $(this).attr('data-original-title');
+    $('.date-hover').text('');
+    $('.date-hover').text(gagDate);
+
+    $('[data-toggle="tooltip"]').tooltip()
+    });
+
+    });
+    </script>
+    <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+    <script type="text/javascript">
+    document.getElementById("mainRowCamputer").classList.toggle("hideAll")
+    document.getElementById("mainRowPhones").classList.toggle("showAll")
+    </script>
+{% endblock %}
+{% endblock %}

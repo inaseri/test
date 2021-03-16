@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{%  load static from staticfiles %}
+{% load pwa %}
+<html lang="fa">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+      <link href="{% static 'theme1/css/bootstrap.min.css'%}" rel="stylesheet">
+      <link href="{% static 'theme1/css/bootstrap-rtl.min.css'%}" rel="stylesheet"/>
+      <link href="{% static 'theme1/css/style.css'%}" rel="stylesheet">
+        <link rel="manifest" href="{% static 'theme1/manifest.json'%}">
+    {% block css %}{% endblock %}
+  {% progressive_web_app_meta %}
+  </head>
+  <body>
+  {% block body %}{% endblock %}
+  {% block js %}{% endblock %}
+  <script>
+    $(".container").css("min-height",window.innerHeight-60);
+  </script>
+  </body>
+</html>

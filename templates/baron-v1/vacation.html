@@ -1,0 +1,181 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+
+{% block title %}درخواست مرخصی{% endblock %}
+
+{% block js %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+    <script>
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+    </script>
+    <script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+
+{% endblock %}
+
+{% block css %}
+    <style>
+        @media only screen and (max-width: 998px) {
+            .hideAll {
+                display: none;
+            }
+        }
+        @media only screen and (min-width: 998px) {
+            .showAll {
+                display: none;
+            }
+        }
+    </style>
+    <link href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        <div id="mainRowPhones">
+            <div class="row">
+                <div class="col-xs-8">
+                    <h2 style="font-family: bnazanin;">توضیحات ساعت کاری</h2>
+                </div>
+                <div class="col-xs-4">
+                    <a class="btn-baron" href="{% url 'index' %}" style="font-family: bnazanin; font-size: 18px;">برگشت</a>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 25px;">
+                <hr style="width: 100%">
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row" style="margin-top: 25px;">
+                    <div class="col-xs-12">
+                        <input class="btn-baron jalali-datepicker" type="text" name="dateOfDesc" style="font-size: 18px;">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 25px;">
+                    <div class="col-xs-12">
+                        <input type="text" class="btn-baron" placeholder="توضیحات" name="desc" style="font-size: 18px;">
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 25px;">
+                    <div class="col-xs-12">
+                        <button type="submit" class="btn-baron" style="font-size: 18px;">ذخیره</button>
+                    </div>
+                </div>
+            </form>
+{#            <div class="row" style="margin-top: 50px;">#}
+{#                <hr style="width: 100%;">#}
+{#            </div>#}
+{#            <div class="row" style="margin-top: 50px;">#}
+{#                <div class="col-xs-12">#}
+{#                    <h2 style="font-family: bnazanin;">درخواست مرخصی</h2>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row" style="margin-top: 30px;">#}
+{#                <div class="col-xs-12">#}
+{#                    <h5 style="font-family: bnazanin; font-size: 16px;">این جانب {{ user.first_name }} {{ user.last_name }} دارای درخواست مرخصی از تاریخ</h5>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row">#}
+{#                <div class="col-xs-3">#}
+{#                    <input type="text" class="jalali-datepicker" style="text-align: center; width: 100%;">#}
+{#                </div>#}
+{#                <div class="col-xs-3">#}
+{#                    <h5 style="font-family: bnazanin; font-size: 16px;">به مدت</h5>#}
+{#                </div>#}
+{#                <div class="col-xs-2" style="margin-right: -40px">#}
+{#                    <input type="text" style="text-align: center; width: 100%;">#}
+{#                </div>#}
+{#                <div class="col-xs-4">#}
+{#                    <h5 style="font-family: bnazanin; font-size: 16px;">روز را دارا می باشم.</h5>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row" style="margin-top: 50px;">#}
+{#                <div class="col-xs-12">#}
+{#                    <button class="btn-baron">ارسال درخواست</button>#}
+{#                </div>#}
+{#            </div>#}
+        </div>
+
+        <div id="mainRowCamputer">
+            <div class="row">
+                <div class="col-md-4">
+                    <h2 style="font-family: bnazanin;">توضیحات ساعت کاری</h2>
+                </div>
+                <div class="col-md-6"></div>
+                <div class="col-md-2">
+                    <a class="btn-baron" href="{% url 'index' %}" style="font-family: bnazanin; font-size: 25px;">برگشت</a>
+                </div>
+            </div>
+            <form method="post">
+                <div class="row" style="margin-top: 50px;">
+                    {% csrf_token %}
+                    <div class="col-md-3">
+                        <input class="btn-baron jalali-datepicker" type="text" name="dateOfDesc">
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="btn-baron" placeholder="توضیحات" name="desc">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn-baron">ذخیره</button>
+                    </div>
+                </div>
+            </form>
+            <div class="row" style="margin-top: 50px;">
+                <hr style="width: 100%;">
+            </div>
+{#            <div class="row" style="margin-top: 50px;">#}
+{#                <div class="col-md-3">#}
+{#                    <h2 style="font-family: bnazanin;">درخواست مرخصی</h2>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row" style="margin-top: 50px;">#}
+{#                <div class="col-md-1"></div>#}
+{#                <div class="col-md-4">#}
+{#                    <h5 style="font-family: bnazanin; font-size: 18px;">این جانب {{ user.first_name }} {{ user.last_name }} دارای درخواست مرخصی از تاریخ</h5>#}
+{#                </div>#}
+{#                <div class="col-md-2">#}
+{#                    <input type="text" class="jalali-datepicker" style="text-align: center; width: 100%;">#}
+{#                </div>#}
+{#                <div class="col-md-1">#}
+{#                    <h5 style="font-family: bnazanin; font-size: 18px;">به مدت</h5>#}
+{#                </div>#}
+{#                <div class="col-md-2">#}
+{#                    <input type="text" style="text-align: center; width: 100%;">#}
+{#                </div>#}
+{#                <div class="col-md-2">#}
+{#                    <h5 style="font-family: bnazanin; font-size: 18px; width: 100%;">روز را دارا می باشم.</h5>#}
+{#                </div>#}
+{#            </div>#}
+{#            <div class="row" style="margin-top: 50px;">#}
+{#                <div class="col-md-4"></div>#}
+{#                <div class="col-md-4">#}
+{#                    <button class="btn-baron">ارسال درخواست</button>#}
+{#                </div>#}
+{#                <div class="col-md-4"></div>#}
+{#            </div>#}
+        </div>
+
+        <script type="text/javascript">
+            document.getElementById("mainRowCamputer").classList.toggle("hideAll")
+            document.getElementById("mainRowPhones").classList.toggle("showAll")
+        </script>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,148 @@
+{%  extends "baron-v1/base.html" %}
+{%  load static from staticfiles %}
+{% block title %}افزودن مبادله{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="{% static 'theme1/js/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/moment-jalaali.js' %}"></script>
+    <script type="text/javascript" src="{% static 'theme1/js/daterangepicker-fa.js' %}"></script>
+    <script>
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+    $("#save").submit(function () {
+		$(".companycp").attr("value",$(".companymain").val());
+    });
+	{% if success %}
+	alert("ثبت مبادله با موفقیت انجام شد");
+	{% endif %}
+
+    </script>
+<script type="text/javascript" href="{% static 'theme1/js/custom.min.js' %}"></script>
+{% endblock %}
+{% block css %}
+<link href="{% static 'theme1/css/daterangepicker.css'%}" rel="stylesheet"/>
+{% endblock %}
+{% block body %}
+    <div class="container">
+		<div class="row">
+			<div class="col-md-12" style="background : linear-gradient(270deg, #C28C00 0%, rgba(254, 255, 214, 0.22) 50%), linear-gradient(90deg, #C28C00 0%, #FFDFB0 47.44%);">
+			</div>
+		</div>
+		<div class="row" style="margin-top:50px">
+			<div class="col-md-9">
+				<div class="row">
+					<div class="col-md-4">
+						  <p class="btn-baron">نام شرکت</p>
+					</div>
+					<form method="post" id="select" class="col-md-8">
+						<div class="row">
+							{% csrf_token %}
+							<div class="col-md-5">
+							  <select name="company" class="btn-baron companymain">
+									<option value="0">همه</option>
+									{% if parent %}
+										{% if parent.parent %}
+											<option value="{{parent.parent.id}}">{{parent.parent}}</option>
+										{% endif %}
+										<option value="{{parent.id}}" selected>{{parent}}</option>
+									{% endif %}
+									{% for company in comany_name %}
+										<option value="{{ company.id }}">{{ company.name }}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="col-md-7">
+								  <button name="name" class="btn-baron">اعمال فیلتر</button>
+							</div>
+						</div>
+					</form>
+
+				</div>
+					<form method="post" id="save" enctype="multipart/form-data">
+						{% csrf_token %}
+						<input type="hidden" value="0" name="company" class="companycp">
+						<div class="row">
+							<div class="col-md-4">
+								<p class="btn-baron">عنوان</p>
+							</div>
+							<div class="col-md-8">
+								<input type = "text" class="btn-baron" name="title"/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<p class="btn-baron">رقم</p>
+							</div>
+							<div class="col-md-8">
+								<input type = "text" class="btn-baron" name="cash"/>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<p class="btn-baron">تاریخ</p>
+							</div>
+							<div class="col-md-8">
+								<input class="btn-baron jalali-datepicker" type="text" name="datepicker">
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<p class="btn-baron">نام بانک</p>
+							</div>
+							<div class="col-md-8">
+							  <select name="bank" class="btn-baron companymain">
+									<option>یکی را انتخاب کنید.</option>
+									{% for bank in bank_name %}
+										<option value="{{ bank.id }}">{{ bank }}</option>
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<p class="btn-baron">توضیحات</p>
+							</div>
+							<div class="col-md-8">
+								<textarea class="btn-baron" name="desceription"></textarea>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-md-4">
+								<p class="btn-baron">تصویر</p>
+							</div>
+							<div class="col-md-8">
+								<input class="btn-baron" type="file" name="pic">
+							</div>
+						</div>
+					</form>
+			</div>
+			<div class="col-md-3">
+				<button type="submit" class="btn-baron" form="save">ذخیره</button>
+			</div>
+		</div>
+		<div class="row" style="margin-top: 50px">
+			<div class="col-md-3">
+				<a href="{% url 'transactions' %}" class="btn-baron">تمامی مبادلات</a>
+			</div>
+			<div class="col-md-2"></div>
+			<div class="col-md-2">
+				<a href="{% url 'logout' %}" class="btn-baron"> خروج </a>
+			</div>
+			<div class="col-md-2"></div>
+			<div class="col-md-3">
+				<a href="{% url 'addcompany' %}" class="btn-baron">افزودن شرکت</a>
+			</div>
+		</div>
+	</div>
+{% endblock %}

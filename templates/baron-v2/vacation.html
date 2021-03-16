@@ -1,0 +1,148 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    توضیحات ساعت کاری
+{% endblock %}
+{% block css %}
+  <link href="{% static 'theme2/css/daterangepicker.css' %}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{% static 'theme2/css/datepicker-theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
+{% endblock %}
+
+{% block body %}
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+    <a class="navbar-brand" onclick="window.history.back()" style="color: white;">
+        <img src="{% static 'theme2/img/svg/ic-Back.svg' %}" style="height: 35px; width: 35px;">
+        <strong style="font-family: bnazanin; margin-left: -10px;">برگشت</strong>
+    </a>
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right dropdown-default"
+          aria-labelledby="navbarDropdownMenuLink-333">
+          <a class="dropdown-item" href="{% url 'logout' %}">خروج</a>
+        </div>
+      </li>
+    </ul>
+    </nav>
+</header>
+    <div class="container-fluid">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4 md-form">
+                <input class="jalali-datepicker form-control" type="text" name="dateOfDesc" style="width: 100%; text-align: center;">
+            </div>
+        </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <input class="form-control" name="desc" placeholder="توضیحات امروز" style="text-align: center; font-family: adobeAr; font-size: 16px;">
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn-amber btn-default" style="width: 100%;">ثبت توضیحات</button>
+                </div>
+                <div class="col-md-4"></div>
+
+            </div>
+        </form>
+    </div>
+{% block js %}
+<script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}" ></script>
+<script src="{% static 'theme2/js/moment-jalaali.js' %}"></script>
+<script src="{% static 'theme2/js/daterangepicker-fa-ex.js' %}"></script>
+<script>
+    $(document).ready(function () {
+    var night;
+    var isRtl = true;
+    var dateFormat = isRtl ? 'jYYYY/jMM/jDD' : 'YYYY/MM/DD';
+    var dateFrom = false ? moment("") : undefined;
+    var dateTo = false ? moment("") : undefined;
+    var $dateRanger = $("#dateRangePicker");
+
+    $dateRanger.daterangepicker({
+        clearLabel: 'Clear',
+        autoUpdateInput: !!(dateFrom && dateTo),
+        minDate: moment(),
+        autoApply: true,
+        opens: isRtl ? 'left' : 'right',
+        locale: {
+            separator: ' - ',
+            format: dateFormat
+        },
+        startDate: dateFrom,
+        endDate: dateTo,
+        jalaali: isRtl,
+        showDropdowns: true
+    }).on('apply.daterangepicker', function (ev, picker) {
+        night = picker.endDate.diff(picker.startDate, 'days');
+        if (night > 0) {
+            $(this).val(picker.startDate.format(dateFormat));
+            $('#dateRangePickerEnd').val(picker.endDate.format(dateFormat));
+        } else {
+            $(this).val('')
+        }
+    });
+
+
+    $('.ga-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        // autoUpdateInput: !!(dateFrom && dateTo),
+        //minDate: moment(),
+        autoApply: true,
+        opens: 'right',
+        singleDatePicker: true,
+        showDropdowns: true,
+        language: 'en'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+
+    $('.jalali-datepicker').daterangepicker({
+        clearLabel: 'Clear',
+        autoApply: true,
+        opens: 'left',
+        singleDatePicker: true,
+        showDropdowns: true,
+        jalaali: true,
+        language: 'fa'
+    }).on('apply.daterangepicker', function () {
+        $('.tooltip').hide();
+        $('.date-select').text($(this).val());
+    });
+
+    $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+        var gagDate = $(this).attr('data-original-title');
+        $('.date-hover').text('');
+        $('.date-hover').text(gagDate);
+
+        $('[data-toggle="tooltip"]').tooltip()
+    });
+
+});
+</script>
+<script>
+$("#save").submit(function () {
+    $(".companycp").attr("value",$(".companymain").val());
+});
+{% if success %}
+alert("ثبت مبادله با موفقیت انجام شد");
+{% endif %}
+</script>
+<script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+<script type="text/javascript">
+document.getElementById("mainRowCamputer").classList.toggle("hideAll");
+document.getElementById("mainRowPhones").classList.toggle("showAll");
+</script>
+{% endblock %}
+{% endblock %}

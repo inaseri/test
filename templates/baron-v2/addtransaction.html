@@ -1,0 +1,234 @@
+{% extends 'baron-v2/base.html' %}
+{% load static %}
+{% block title %}
+    افزودن مبادله
+{% endblock %}
+{% block css %}
+  <link href="{% static 'theme2/css/daterangepicker.css' %}" rel="stylesheet" type="text/css" media="all" />
+  <link href="{% static 'theme2/css/datepicker-theme.css' %}" rel="stylesheet" type="text/css" media="all"  />
+{% endblock %}
+{% block js %}
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}" ></script>
+  <script src="{% static 'theme2/js/moment-jalaali.js' %}"></script>
+  <script src="{% static 'theme2/js/daterangepicker-fa-ex.js' %}"></script>
+  <script>
+        $(document).ready(function () {
+        var night;
+        var isRtl = true;
+        var dateFormat = isRtl ? 'jYYYY/jMM/jDD' : 'YYYY/MM/DD';
+        var dateFrom = false ? moment("") : undefined;
+        var dateTo = false ? moment("") : undefined;
+        var $dateRanger = $("#dateRangePicker");
+
+        $dateRanger.daterangepicker({
+            clearLabel: 'Clear',
+            autoUpdateInput: !!(dateFrom && dateTo),
+            minDate: moment(),
+            autoApply: true,
+            opens: isRtl ? 'left' : 'right',
+            locale: {
+                separator: ' - ',
+                format: dateFormat
+            },
+            startDate: dateFrom,
+            endDate: dateTo,
+            jalaali: isRtl,
+            showDropdowns: true
+        }).on('apply.daterangepicker', function (ev, picker) {
+            night = picker.endDate.diff(picker.startDate, 'days');
+            if (night > 0) {
+                $(this).val(picker.startDate.format(dateFormat));
+                $('#dateRangePickerEnd').val(picker.endDate.format(dateFormat));
+            } else {
+                $(this).val('')
+            }
+        });
+
+
+        $('.ga-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            // autoUpdateInput: !!(dateFrom && dateTo),
+            //minDate: moment(),
+            autoApply: true,
+            opens: 'right',
+            singleDatePicker: true,
+            showDropdowns: true,
+            language: 'en'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $('.jalali-datepicker').daterangepicker({
+            clearLabel: 'Clear',
+            autoApply: true,
+            opens: 'left',
+            singleDatePicker: true,
+            showDropdowns: true,
+            jalaali: true,
+            language: 'fa'
+        }).on('apply.daterangepicker', function () {
+            $('.tooltip').hide();
+            $('.date-select').text($(this).val());
+        });
+
+        $(document).on('mouseover', '.daterangepicker .calendar td', function () {
+            var gagDate = $(this).attr('data-original-title');
+            $('.date-hover').text('');
+            $('.date-hover').text(gagDate);
+
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+    });
+  </script>
+  <script>
+    $("#save").submit(function () {
+		$(".companycp").attr("value",$(".companymain").val());
+    });
+	{% if success %}
+	alert("ثبت مبادله با موفقیت انجام شد");
+	{% endif %}
+    </script>
+  <script type="text/javascript" src="{% static 'theme2/js/moment.min.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+<header>
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: #759D6F;">
+        <!-- Collapse button -->
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#basicExampleNav"
+        aria-controls="basicExampleNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Collapsible content -->
+        <div class="collapse navbar-collapse" id="basicExampleNav">
+            <!-- Links -->
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'transactions' %}">تمامی تراکنش ها</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'add_transaction' %}">افزودن مبادله</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'addcompany' %}">افزودن شرکت</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'admint' %}">مدیریت ساعت کاری</a>
+                </li>
+            </ul>
+        </div>
+
+    <ul class="navbar-nav ml-auto nav-flex-icons">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink-333" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-user"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right dropdown-default"
+          aria-labelledby="navbarDropdownMenuLink-333">
+          <a class="dropdown-item" href="{% url 'logout' %}">خروج</a>
+        </div>
+      </li>
+    </ul>
+    </nav>
+    <!--/.Navbar-->
+</header>
+    <div class="container-fluid">
+        {% load humanize %}
+        <form method="post" id="select">
+            {% csrf_token %}
+            <div class="row" style="margin-top: -80px;">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <select name="company" class="browser-default custom-select companymain">
+                    <option value="0">همه</option>
+                        {% if parent %}
+                            {% if parent.parent %}
+                                <option value="{{parent.parent.id}}">{{parent.parent}}</option>
+                            {% endif %}
+                            <option value="{{parent.id}}" selected>{{parent}}</option>
+                        {% endif %}
+                        {% for company in comany_name %}
+                            <option value="{{ company.id }}">{{ company.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button class="btn btn-default btn-lg btn-block" name="name" style="margin-left: 2px;">انتخاب شرکت</button>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+        </form>
+        <form method="post" id="save" enctype="multipart/form-data">
+            {% csrf_token %}
+                <input type="hidden" value="0" name="company" class="companycp">
+                <div class="row" style="margin-top: -20px">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <div class="md-form">
+                            <input placeholder="تاریخ" type="text" name="datepicker" class="form-control jalali-datepicker" style="text-align: center;">
+                        </div>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row" style="margin-top: 1%;">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <input placeholder="عنوان مبادله" type="text" name="title" class="form-control" style="text-align: center;">
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row" style="margin-top: 2%;">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <input placeholder="رقم مبادله" type="text" name="cash" class="form-control" style="text-align: center;">
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row" style="margin-top: 2%;">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <textarea placeholder="توضیحات" type="text" name="desceription" class="form-control" style="text-align: center;"></textarea>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <select name="bank" class="browser-default custom-select companymain">
+                            <option>بانک را انتخاب کنید</option>
+                            {% for bank in bank_name %}
+                                <option value="{{ bank.id }}">{{ bank }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+                <div class="row" style="margin-top: 2%;">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4" style="margin-top: 5px;">
+                        <div class="custom-file">
+                            <input type="file" class="btn-default" name="pic" style="width: 100%;">
+                        </div>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </form>
+            <div class="row" style=" margin-bottom: 5%;">
+                <div class="col-md-4"></div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-default btn-lg btn-block" style="margin-left: 2px;" form="save">ذخیره</button>
+                </div>
+                <div class="col-md-4"></div>
+            </div>
+
+    </div>
+{% endblock %}

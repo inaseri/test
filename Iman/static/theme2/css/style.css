@@ -1,0 +1,65 @@
+a {
+    font-family: adobeAr;
+    font-size: 18px;
+}
+
+h4 {
+    font-family: adobeAr;
+    font-size: 24px;
+}
+
+p {
+    font-family: adobeAr;
+    font-size: 15px;
+}
+
+button {
+    font-family: adobeAr;
+    font-size: 25px;
+}
+
+.row {
+    margin-top: 20px;
+}
+
+.navbar {
+    margin-bottom: 100px;
+}
+
+.btn {
+    width: 100%;
+    height: 70%;
+}
+
+.pt-3-half {
+    padding-top: 1.4rem;
+}
+
+[type=number]::-webkit-inner-spin-button,
+[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@font-face {
+  font-family: 'bnazanin';
+  src: local('bnazanin'),
+       url('../font/B Nazanin+ Regular.ttf')format("truetype");
+}
+
+@font-face {
+  font-family: 'adobeAr';
+  src: local('Abc'),
+       url('../font/AdobeArabic-Bold_17.otf')format("truetype");
+}
+
+@media only screen and (max-width: 998px) {
+    .hideAll {
+        display: none;
+    }
+}
+@media only screen and (min-width: 998px) {
+    .showAll {
+        display: none;
+    }
+}
